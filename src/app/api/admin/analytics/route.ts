@@ -85,15 +85,16 @@ export async function GET() {
       (l) => l.gateLogs[0]?.type === "ENTRY"
     ).length;
 
+    const totalLogs = await prisma.gateLog.count();
+
     return NextResponse.json({
-      dailyStats,
+      dailyActivity: dailyStats,
       gateUsage,
-      hourlyActivity: hourBuckets,
-      summary: {
-        onCampus,
-        entriesToday,
-        exitsToday,
-      },
+      peakHours: hourBuckets,
+      onCampusNow: onCampus,
+      entriesToday,
+      exitsToday,
+      totalLogs,
     });
   } catch (error) {
     console.error("Analytics error:", error);
