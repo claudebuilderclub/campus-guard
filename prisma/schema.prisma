@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  password     String
+  role         String    @default("GATEMAN")
+  gateLocation String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  gateLogs     GateLog[]
+}
+
+model Student {
+  id         String   @id @default(cuid())
+  regNumber  String   @unique
+  name       String
+  email      String
+  phone      String
+  department String
+  photoUrl   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  laptops    Laptop[]
+}
+
+model Laptop {
+  id           String    @id @default(cuid())
+  serialNumber String    @unique
+  brand        String
+  model        String
+  color        String
+  receiptUrl   String?
+  studentId    String
+  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  gateLogs     GateLog[]
+}
+
+model GateLog {
+  id           String   @id @default(cuid())
+  type         String
+  gateLocation String
+  timestamp    DateTime @default(now())
+  notes        String?
+  laptopId     String
+  laptop       Laptop   @relation(fields: [laptopId], references: [id], onDelete: Cascade)
+  verifiedById String
+  verifiedBy   User     @relation(fields: [verifiedById], references: [id])
+
+  @@index([laptopId, timestamp])
+  @@index([timestamp])
+}
