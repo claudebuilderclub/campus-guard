@@ -11,7 +11,7 @@ export async function GET() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [totalStudents, totalLaptops, totalGatemen, logsToday, recentLogs] = await Promise.all([
+  const [totalStudents, totalLaptops, totalGatemen, logsToday, recentLogs, allLaptopsWithLastLog] = await Promise.all([
     prisma.student.count(),
     prisma.laptop.count(),
     prisma.user.count({ where: { role: "GATEMAN" } }),
@@ -24,7 +24,19 @@ export async function GET() {
         verifiedBy: { select: { name: true } },
       },
     }),
+    prisma.laptop.findMany({
+      include: {
+        gateLogs: {
+          orderBy: { timestamp: "desc" as const },
+          take: 1,
+        },
+      },
+    }),
   ]);
+
+  const onCampusCount = allLaptopsWithLastLog.filter(
+    (l) => l.gateLogs[0]?.type === "ENTRY"
+  ).length;
 
   return NextResponse.json({
     totalStudents,
@@ -32,5 +44,6 @@ export async function GET() {
     totalGatemen,
     logsToday,
     recentLogs,
+    onCampusCount,
   });
 }
