@@ -35,7 +35,7 @@ function LoginForm() {
       setLoading(false);
     } else {
       const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-      router.push(callbackUrl);
+      window.location.href = callbackUrl;
     }
   }
 
