@@ -5,8 +5,6 @@ import { Providers } from "@/components/Providers";
 
 const inter = Inter({
   subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -21,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-[var(--font-inter)]">
+    <html lang="en" className={`${inter.className} h-full antialiased`}>
+      <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
       </body>
     </html>
