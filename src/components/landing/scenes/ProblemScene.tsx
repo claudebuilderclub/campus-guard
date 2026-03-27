@@ -36,43 +36,43 @@ export default function ProblemScene({
 }: {
   progress: MotionValue<number>;
 }) {
-  /* ── Phase 1 words (0 → 0.5) ── */
+  /* ── Phase 1 words (0 → 0.35) ── */
   // "Every" — from LEFT
-  const everyX = useTransform(progress, [0, 0.15], [-200, 0]);
-  const everyOpacity = useTransform(progress, [0, 0.15], [0, 1]);
+  const everyX = useTransform(progress, [0, 0.1], [-200, 0]);
+  const everyOpacity = useTransform(progress, [0, 0.1], [0, 1]);
 
   // "day," — from RIGHT
-  const dayX = useTransform(progress, [0.1, 0.25], [200, 0]);
-  const dayOpacity = useTransform(progress, [0.1, 0.25], [0, 1]);
+  const dayX = useTransform(progress, [0.05, 0.15], [200, 0]);
+  const dayOpacity = useTransform(progress, [0.05, 0.15], [0, 1]);
 
   // "thousands" — from TOP
-  const thousandsY = useTransform(progress, [0.15, 0.3], [-150, 0]);
-  const thousandsOpacity = useTransform(progress, [0.15, 0.3], [0, 1]);
+  const thousandsY = useTransform(progress, [0.1, 0.2], [-150, 0]);
+  const thousandsOpacity = useTransform(progress, [0.1, 0.2], [0, 1]);
 
   // "of laptops" — from LEFT
-  const ofLaptopsX = useTransform(progress, [0.2, 0.35], [-200, 0]);
-  const ofLaptopsOpacity = useTransform(progress, [0.2, 0.35], [0, 1]);
+  const ofLaptopsX = useTransform(progress, [0.15, 0.25], [-200, 0]);
+  const ofLaptopsOpacity = useTransform(progress, [0.15, 0.25], [0, 1]);
 
   // "pass through" — from RIGHT
-  const passThroughX = useTransform(progress, [0.25, 0.4], [200, 0]);
-  const passThroughOpacity = useTransform(progress, [0.25, 0.4], [0, 1]);
+  const passThroughX = useTransform(progress, [0.2, 0.3], [200, 0]);
+  const passThroughOpacity = useTransform(progress, [0.2, 0.3], [0, 1]);
 
   // "campus gates" — scale from CENTER
-  const campusGatesScale = useTransform(progress, [0.3, 0.45], [0, 1]);
-  const campusGatesOpacity = useTransform(progress, [0.3, 0.45], [0, 1]);
+  const campusGatesScale = useTransform(progress, [0.25, 0.35], [0, 1]);
+  const campusGatesOpacity = useTransform(progress, [0.25, 0.35], [0, 1]);
 
   /* ── Phase 1 → Phase 2 crossfade ── */
-  const phase1Opacity = useTransform(progress, [0.45, 0.55], [1, 0]);
-  const phase2Opacity = useTransform(progress, [0.5, 0.65], [0, 1]);
+  const phase1Opacity = useTransform(progress, [0.35, 0.45], [1, 0]);
+  const phase2Opacity = useTransform(progress, [0.4, 0.5], [0, 1]);
 
-  /* ── Phase 2 words (0.5 → 1.0) ── */
+  /* ── Phase 2 words (0.4 → 0.7) ── */
   // "But how do you know..." — from LEFT
-  const howX = useTransform(progress, [0.5, 0.7], [-200, 0]);
-  const howOpacity = useTransform(progress, [0.5, 0.7], [0, 1]);
+  const howX = useTransform(progress, [0.4, 0.6], [-200, 0]);
+  const howOpacity = useTransform(progress, [0.4, 0.6], [0, 1]);
 
   // "which ones belong here?" — from RIGHT
-  const belongX = useTransform(progress, [0.6, 0.8], [200, 0]);
-  const belongOpacity = useTransform(progress, [0.6, 0.8], [0, 1]);
+  const belongX = useTransform(progress, [0.5, 0.7], [200, 0]);
+  const belongOpacity = useTransform(progress, [0.5, 0.7], [0, 1]);
 
   /* ── Edge glow: pulsing with sin(progress * PI) ── */
   const glowOpacity = useTransform(progress, (p) =>

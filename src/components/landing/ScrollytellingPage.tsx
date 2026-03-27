@@ -10,15 +10,15 @@ import StatsScene from "./scenes/StatsScene";
 import DemoScene from "./scenes/DemoScene";
 import CTAScene from "./scenes/CTAScene";
 
-// Scene boundaries (percentage of total scroll)
+// Scene boundaries — wider ranges for comfortable pacing (1400vh total)
 const SCENES = [
-  { id: "problem", start: 0, end: 0.15 },
-  { id: "assemble", start: 0.13, end: 0.35 },
-  { id: "dashboard", start: 0.33, end: 0.50 },
-  { id: "flow", start: 0.48, end: 0.70 },
-  { id: "stats", start: 0.68, end: 0.80 },
-  { id: "demo", start: 0.78, end: 0.90 },
-  { id: "cta", start: 0.88, end: 1.0 },
+  { id: "problem", start: 0, end: 0.12 },
+  { id: "assemble", start: 0.10, end: 0.30 },
+  { id: "dashboard", start: 0.28, end: 0.45 },
+  { id: "flow", start: 0.43, end: 0.65 },
+  { id: "stats", start: 0.63, end: 0.76 },
+  { id: "demo", start: 0.74, end: 0.88 },
+  { id: "cta", start: 0.86, end: 1.0 },
 ] as const;
 
 function useSceneProgress(
@@ -27,9 +27,10 @@ function useSceneProgress(
   end: number
 ) {
   const progress = useTransform(scrollYProgress, [start, end], [0, 1]);
+  // Wider fade ranges (0.03 instead of 0.02) for smoother transitions
   const opacity = useTransform(
     scrollYProgress,
-    [start, start + 0.02, end - 0.02, end],
+    [start, start + 0.03, end - 0.03, end],
     [0, 1, 1, 0]
   );
   return { progress, opacity };
@@ -51,28 +52,27 @@ export default function ScrollytellingPage() {
   const s6 = useSceneProgress(scrollYProgress, SCENES[5].start, SCENES[5].end);
   const s7 = useSceneProgress(scrollYProgress, SCENES[6].start, SCENES[6].end);
 
-  // Global background color transition (dark → light → dark → gradient)
+  // Background color transitions
   const bgColor = useTransform(
     scrollYProgress,
-    [0, 0.15, 0.35, 0.68, 0.80, 0.88, 1.0],
+    [0, 0.12, 0.18, 0.42, 0.63, 0.74, 0.86, 1.0],
     [
-      "#0f172a",        // Scene 1: dark
-      "#0f172a",        // end of Scene 1: still dark
-      "#f8fafc",        // Scene 2-3: light
-      "#f8fafc",        // Scene 4: light
-      "#0f172a",        // Scene 5: dark
-      "#0f172a",        // Scene 6: dark
-      "#1e1b4b",        // Scene 7: deep purple-dark
+      "#0f172a",  // Scene 1: dark
+      "#0f172a",  // end problem
+      "#f8fafc",  // assemble → dashboard: light
+      "#f8fafc",  // flow: light
+      "#0f172a",  // stats: dark
+      "#0f172a",  // demo: dark
+      "#1e1b4b",  // CTA: deep purple
+      "#1e1b4b",
     ]
   );
 
   return (
-    <section ref={containerRef} style={{ height: "700vh" }} className="relative">
+    <section ref={containerRef} style={{ height: "1400vh" }} className="relative">
       <div className="sticky top-0 h-screen overflow-hidden">
-        {/* Dynamic background */}
         <motion.div className="absolute inset-0 -z-10" style={{ backgroundColor: bgColor }} />
 
-        {/* Scene layers — only visible when their scroll range is active */}
         <motion.div className="absolute inset-0" style={{ opacity: s1.opacity }}>
           <ProblemScene progress={s1.progress} />
         </motion.div>

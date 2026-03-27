@@ -23,7 +23,7 @@ const stats: Stat[] = [
     accent: "#2563eb",
     entryAxis: "x",
     entryValue: -300,
-    progressRange: [0, 0.3],
+    progressRange: [0, 0.25],
     gridX: -1,
     gridY: -1,
   },
@@ -33,7 +33,7 @@ const stats: Stat[] = [
     accent: "#7c3aed",
     entryAxis: "y",
     entryValue: -300,
-    progressRange: [0.1, 0.4],
+    progressRange: [0.15, 0.4],
     gridX: 1,
     gridY: -1,
   },
@@ -43,7 +43,7 @@ const stats: Stat[] = [
     accent: "#ec4899",
     entryAxis: "x",
     entryValue: 300,
-    progressRange: [0.2, 0.5],
+    progressRange: [0.3, 0.55],
     gridX: -1,
     gridY: 1,
   },
@@ -53,7 +53,7 @@ const stats: Stat[] = [
     accent: "#059669",
     entryAxis: "scale",
     entryValue: 0,
-    progressRange: [0.3, 0.6],
+    progressRange: [0.45, 0.65],
     gridX: 1,
     gridY: 1,
   },
@@ -84,8 +84,8 @@ function StatCard({
   // Entry animation
   const entryProgress = useTransform(progress, [pStart, pEnd], [0, 1]);
 
-  // Settle into grid (0.6 → 0.85)
-  const settleProgress = useTransform(progress, [0.6, 0.85], [0, 1]);
+  // Settle into grid (0.7 → 0.9)
+  const settleProgress = useTransform(progress, [0.7, 0.9], [0, 1]);
 
   // Scattered entry positions
   const scatteredX = stat.entryAxis === "x" ? stat.entryValue * 0.3 : 0;
