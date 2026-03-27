@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   motion,
   useScroll,
@@ -9,21 +10,17 @@ import {
 } from "framer-motion";
 import { useIsMobile } from "./useIsMobile";
 
-// Dynamic import for GateScene
-let GateScene: React.ComponentType<{ progress: number }> | null = null;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  GateScene = require("./GateScene").default;
-} catch {
-  // GateScene not available yet
-}
+const GateScene = dynamic(
+  () => import("./GateScene").then((mod) => ({ default: mod.GateScene })),
+  { ssr: false }
+);
 
 const steps = [
   {
     number: 1,
     title: "Register Your Laptop",
     description:
-      "Students provide laptop details -- brand, serial number, and color -- at the campus registration portal.",
+      "Students provide laptop details — brand, serial number, and color — at the campus registration portal.",
   },
   {
     number: 2,
@@ -41,7 +38,7 @@ const steps = [
 
 export default function HowItWorksSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isMobile = useIsMobile();
+  const { isMobile, mounted } = useIsMobile();
   const [progressValue, setProgressValue] = useState(0);
 
   const { scrollYProgress } = useScroll({
@@ -102,8 +99,7 @@ export default function HowItWorksSection() {
                   className="w-full rounded-full origin-top"
                   style={{
                     scaleY: lineScaleY,
-                    background:
-                      "linear-gradient(to bottom, var(--primary), var(--accent))",
+                    background: "linear-gradient(to bottom, var(--primary), var(--accent))",
                     height: "100%",
                   }}
                 />
@@ -129,13 +125,8 @@ export default function HowItWorksSection() {
                       className="absolute -left-12 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-500"
                       style={{
                         backgroundColor:
-                          currentStep >= step.number
-                            ? "var(--primary)"
-                            : "var(--card)",
-                        color:
-                          currentStep >= step.number
-                            ? "#ffffff"
-                            : "var(--muted)",
+                          currentStep >= step.number ? "var(--primary)" : "var(--card)",
+                        color: currentStep >= step.number ? "#ffffff" : "var(--muted)",
                         border:
                           currentStep >= step.number
                             ? "2px solid var(--primary)"
@@ -149,16 +140,10 @@ export default function HowItWorksSection() {
                       {step.number}
                     </div>
 
-                    <h3
-                      className="text-xl font-bold mb-2"
-                      style={{ color: "var(--foreground)" }}
-                    >
+                    <h3 className="text-xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
                       {step.title}
                     </h3>
-                    <p
-                      className="leading-relaxed"
-                      style={{ color: "var(--muted)" }}
-                    >
+                    <p className="leading-relaxed" style={{ color: "var(--muted)" }}>
                       {step.description}
                     </p>
                   </motion.div>
@@ -168,7 +153,7 @@ export default function HowItWorksSection() {
           </div>
 
           {/* Right column - 3D Gate Scene (desktop only) */}
-          {!isMobile && (
+          {mounted && !isMobile && (
             <div className="hidden lg:block lg:w-2/5">
               <div
                 className="sticky rounded-2xl overflow-hidden"
@@ -179,59 +164,7 @@ export default function HowItWorksSection() {
                   border: "1px solid var(--border)",
                 }}
               >
-                {GateScene ? (
-                  <GateScene progress={progressValue} />
-                ) : (
-                  /* Placeholder when GateScene is not available */
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="text-center">
-                      <motion.div
-                        animate={{ rotate: [0, 5, -5, 0] }}
-                        transition={{
-                          duration: 4,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        <svg
-                          width="64"
-                          height="64"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                          <path d="M9 12l2 2 4-4" />
-                        </svg>
-                      </motion.div>
-                      <p
-                        className="mt-4 text-sm font-medium"
-                        style={{ color: "var(--muted)" }}
-                      >
-                        Gate verification in progress...
-                      </p>
-                      <div
-                        className="mt-3 mx-auto h-1.5 rounded-full overflow-hidden"
-                        style={{
-                          width: 120,
-                          backgroundColor: "var(--border)",
-                        }}
-                      >
-                        <motion.div
-                          className="h-full rounded-full"
-                          style={{
-                            background:
-                              "linear-gradient(90deg, var(--primary), var(--accent))",
-                            width: `${progressValue * 100}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <GateScene progress={progressValue} />
               </div>
             </div>
           )}

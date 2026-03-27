@@ -1,22 +1,19 @@
 "use client";
 
 import { useRef } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion, useScroll } from "framer-motion";
 import { useIsMobile } from "./useIsMobile";
 
-// Dynamic import for HeroScene - will gracefully fail if not yet created
-let HeroScene: React.ComponentType<{ scrollProgress: ReturnType<typeof useScroll>["scrollYProgress"] }> | null = null;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  HeroScene = require("./HeroScene").default;
-} catch {
-  // HeroScene not available yet
-}
+const HeroScene = dynamic(
+  () => import("./HeroScene").then((mod) => ({ default: mod.HeroScene })),
+  { ssr: false }
+);
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isMobile = useIsMobile();
+  const { isMobile, mounted } = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
@@ -27,8 +24,8 @@ export default function HeroSection() {
       ref={sectionRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Background */}
-      {!isMobile && HeroScene ? (
+      {/* 3D Background (desktop) or gradient blobs (mobile) */}
+      {mounted && !isMobile ? (
         <div className="absolute inset-0 z-0">
           <HeroScene scrollProgress={scrollYProgress} />
         </div>
@@ -43,10 +40,7 @@ export default function HeroSection() {
               left: "10%",
               backgroundColor: "var(--primary)",
             }}
-            animate={{
-              scale: [1, 1.2, 1],
-              x: [0, 30, 0],
-            }}
+            animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
@@ -58,16 +52,8 @@ export default function HeroSection() {
               right: "10%",
               backgroundColor: "var(--accent)",
             }}
-            animate={{
-              scale: [1, 1.3, 1],
-              x: [0, -20, 0],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 1,
-            }}
+            animate={{ scale: [1, 1.3, 1], x: [0, -20, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           />
           <motion.div
             className="absolute rounded-full blur-3xl opacity-20"
@@ -78,16 +64,8 @@ export default function HeroSection() {
               left: "40%",
               backgroundColor: "var(--success)",
             }}
-            animate={{
-              scale: [1, 1.15, 1],
-              x: [0, 15, 0],
-            }}
-            transition={{
-              duration: 9,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2,
-            }}
+            animate={{ scale: [1, 1.15, 1], x: [0, 15, 0] }}
+            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           />
         </div>
       )}
@@ -100,12 +78,10 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-8"
-          style={{
-            backgroundColor: "var(--primary-light)",
-            color: "var(--primary)",
-          }}
+          style={{ backgroundColor: "var(--primary-light)", color: "var(--primary)" }}
         >
-          <span>&#128737;&#65039;</span> Securing campus laptops in real-time
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          Securing campus laptops in real-time
         </motion.div>
 
         {/* Heading */}
@@ -130,7 +106,7 @@ export default function HeroSection() {
           style={{ color: "var(--muted)" }}
         >
           A modern gate-management system that tracks, verifies, and secures
-          every laptop entering and leaving your campus -- instantly.
+          every laptop entering and leaving your campus — instantly.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -146,8 +122,7 @@ export default function HeroSection() {
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl text-white font-semibold text-base transition-shadow"
               style={{
                 backgroundColor: "var(--primary)",
-                boxShadow:
-                  "0 4px 14px 0 rgba(37, 99, 235, 0.4)",
+                boxShadow: "0 4px 14px 0 rgba(37, 99, 235, 0.4)",
               }}
             >
               Get Started
@@ -157,10 +132,7 @@ export default function HeroSection() {
             <Link
               href="/login"
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl font-semibold text-base border-2 transition-colors"
-              style={{
-                borderColor: "var(--border)",
-                color: "var(--foreground)",
-              }}
+              style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
             >
               Staff Login
             </Link>
@@ -169,7 +141,7 @@ export default function HeroSection() {
 
         {/* Scroll indicator */}
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="mt-16"
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -182,6 +154,7 @@ export default function HeroSection() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className="mx-auto"
           >
             <polyline points="6 9 12 15 18 9" />
           </svg>

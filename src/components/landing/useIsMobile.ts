@@ -3,16 +3,14 @@
 import { useState, useEffect } from "react";
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(true); // Default true to avoid flashing 3D on SSR
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkMobile = () => {
       const isSmallScreen = window.matchMedia("(max-width: 768px)").matches;
-      const isLowPower =
-        typeof navigator !== "undefined" &&
-        "hardwareConcurrency" in navigator &&
-        navigator.hardwareConcurrency <= 4;
-      setIsMobile(isSmallScreen || isLowPower);
+      setIsMobile(isSmallScreen);
     };
 
     checkMobile();
@@ -20,5 +18,5 @@ export function useIsMobile() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  return isMobile;
+  return { isMobile, mounted };
 }
