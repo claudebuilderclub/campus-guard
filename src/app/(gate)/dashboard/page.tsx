@@ -139,6 +139,12 @@ export default function DashboardPage() {
 
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted hidden sm:inline">{session?.user?.name}</span>
+            <Link
+              href="/register"
+              className="px-3.5 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 rounded-lg transition-colors focus-ring"
+            >
+              + Register Laptop
+            </Link>
             {session?.user?.role === "ADMIN" && (
               <Link
                 href="/admin"

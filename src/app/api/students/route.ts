@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { z } from "zod";
 
 const studentSchema = z.object({
@@ -16,6 +17,14 @@ const studentSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user || !["ADMIN", "GATE_STAFF"].includes((session.user as any).role)) {
+      return NextResponse.json(
+        { error: "Unauthorized. Only gate staff or admins can register laptops." },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const data = studentSchema.parse(body);
 
