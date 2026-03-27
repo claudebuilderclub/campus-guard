@@ -31,7 +31,8 @@
       "Bash(mkdir -p \"src/app/\\(gate\\)/register\")",
       "Bash(mv \"src/app/\\(public\\)/register/page.tsx\" \"src/app/\\(gate\\)/register/page.tsx\")",
       "Bash(rmdir \"src/app/\\(public\\)/register\")",
-      "Bash(ls \"src/app/\\(gate\\)/\")"
+      "Bash(ls \"src/app/\\(gate\\)/\")",
+      "Bash(npx tsc:*)"
     ]
   }
 }
