@@ -1,163 +1,151 @@
 "use client";
 
 import { useRef } from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { motion, useScroll } from "framer-motion";
-import { useIsMobile } from "./useIsMobile";
-
-const HeroScene = dynamic(
-  () => import("./HeroScene").then((mod) => ({ default: mod.HeroScene })),
-  { ssr: false }
-);
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Laptop3D } from "./Laptop3D";
 
 export default function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const { isMobile, mounted } = useIsMobile();
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
+    target: containerRef,
+    offset: ["start start", "end end"],
   });
 
+  // Text fades out
+  const textOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.15], [0, -60]);
+
+  // Reveal CTA fades in
+  const revealOpacity = useTransform(scrollYProgress, [0.5, 0.65], [0, 1]);
+  const revealY = useTransform(scrollYProgress, [0.5, 0.65], [30, 0]);
+
   return (
-    <section
-      ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-    >
-      {/* 3D Background (desktop) or gradient blobs (mobile) */}
-      {mounted && !isMobile ? (
-        <div className="absolute inset-0 z-0">
-          <HeroScene scrollProgress={scrollYProgress} />
+    <section ref={containerRef} style={{ height: "250vh" }} className="relative">
+      <div className="sticky top-0 h-screen overflow-hidden">
+        {/* Background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at 30% 40%, rgba(37,99,235,0.06) 0%, transparent 50%), " +
+              "radial-gradient(ellipse at 75% 25%, rgba(124,58,237,0.05) 0%, transparent 50%), " +
+              "var(--background)",
+          }}
+        />
+
+        {/* Floating dots */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              width: 3 + i * 2,
+              height: 3 + i * 2,
+              left: `${12 + i * 18}%`,
+              top: `${25 + (i % 3) * 22}%`,
+              backgroundColor: i % 2 === 0 ? "var(--primary)" : "var(--accent)",
+              opacity: 0.12,
+            }}
+            animate={{ y: [0, -15 - i * 4, 0] }}
+            transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.7 }}
+          />
+        ))}
+
+        {/* ═══ LAPTOP — centered in viewport ═══ */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+          <Laptop3D scrollProgress={scrollYProgress} />
         </div>
-      ) : (
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          <motion.div
-            className="absolute rounded-full blur-3xl opacity-30"
-            style={{
-              width: 400,
-              height: 400,
-              top: "10%",
-              left: "10%",
-              backgroundColor: "var(--primary)",
-            }}
-            animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute rounded-full blur-3xl opacity-30"
-            style={{
-              width: 350,
-              height: 350,
-              top: "40%",
-              right: "10%",
-              backgroundColor: "var(--accent)",
-            }}
-            animate={{ scale: [1, 1.3, 1], x: [0, -20, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          />
-          <motion.div
-            className="absolute rounded-full blur-3xl opacity-20"
-            style={{
-              width: 300,
-              height: 300,
-              bottom: "10%",
-              left: "40%",
-              backgroundColor: "var(--success)",
-            }}
-            animate={{ scale: [1, 1.15, 1], x: [0, 15, 0] }}
-            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          />
-        </div>
-      )}
 
-      {/* Content overlay */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-        {/* Badge */}
+        {/* ═══ TEXT OVERLAY — fades out on scroll ═══ */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-8"
-          style={{ backgroundColor: "var(--primary-light)", color: "var(--primary)" }}
+          className="absolute inset-0 flex flex-col items-center justify-start pt-[12vh] z-20 pointer-events-none"
+          style={{ opacity: textOpacity, y: textY }}
         >
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          Securing campus laptops in real-time
-        </motion.div>
-
-        {/* Heading */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight"
-          style={{ color: "var(--foreground)" }}
-        >
-          Secure Every Laptop
-          <br />
-          <span className="gradient-text">At Every Gate</span>
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-6 text-lg md:text-xl max-w-2xl mx-auto"
-          style={{ color: "var(--muted)" }}
-        >
-          A modern gate-management system that tracks, verifies, and secures
-          every laptop entering and leaving your campus — instantly.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <motion.div whileHover={{ scale: 1.02, y: -2 }}>
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl text-white font-semibold text-base transition-shadow"
-              style={{
-                backgroundColor: "var(--primary)",
-                boxShadow: "0 4px 14px 0 rgba(37, 99, 235, 0.4)",
-              }}
-            >
-              Get Started
-            </Link>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.02, y: -2 }}>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl font-semibold text-base border-2 transition-colors"
-              style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
-            >
-              Staff Login
-            </Link>
-          </motion.div>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="mt-16"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="var(--muted)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mx-auto"
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-5 pointer-events-auto"
+            style={{ backgroundColor: "var(--primary-light)", color: "var(--primary)" }}
           >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            Campus Laptop Security Platform
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.35 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-center"
+          >
+            Secure Every Laptop
+            <br />
+            <span className="gradient-text">At Every Gate</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="mt-4 text-base md:text-lg text-center max-w-lg"
+            style={{ color: "var(--muted)" }}
+          >
+            Scroll down to see how it works
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.5 }}
+            transition={{ delay: 1 }}
+            className="mt-6"
+          >
+            <motion.svg
+              width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="var(--muted)" strokeWidth="2"
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </motion.svg>
+          </motion.div>
+        </motion.div>
+
+        {/* ═══ CTA REVEAL — appears after laptop opens ═══ */}
+        <motion.div
+          className="absolute inset-x-0 bottom-12 flex flex-col items-center text-center z-20"
+          style={{ opacity: revealOpacity, y: revealY }}
+        >
+          <h2 className="text-xl md:text-2xl font-bold mb-3">
+            One Dashboard. Every Gate. <span className="gradient-text">Total Control.</span>
+          </h2>
+          <p className="text-sm md:text-base mb-6 max-w-md" style={{ color: "var(--muted)" }}>
+            Register once. Verify anywhere. Track everything.
+          </p>
+          <div className="flex items-center gap-3">
+            <motion.div whileHover={{ scale: 1.03, y: -2 }}>
+              <Link
+                href="/register"
+                className="inline-flex items-center px-7 py-3 rounded-xl text-white font-semibold text-sm"
+                style={{
+                  backgroundColor: "var(--primary)",
+                  boxShadow: "0 4px 14px 0 rgba(37, 99, 235, 0.35)",
+                }}
+              >
+                Get Started
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.03, y: -2 }}>
+              <Link
+                href="/login"
+                className="inline-flex items-center px-7 py-3 rounded-xl font-semibold text-sm border-2"
+                style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
+              >
+                Staff Login
+              </Link>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
