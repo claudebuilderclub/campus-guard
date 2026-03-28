@@ -3,14 +3,18 @@
 import { motion, useTransform, type MotionValue } from "framer-motion";
 
 /*
-  FEATURE TOUR SCENE
-  ──────────────────
-  The viewport IS the laptop screen at this point (zoomed in from previous scene).
-  Features are revealed one at a time inside a "dashboard" layout.
+  FEATURE TOUR SCENE — Mosaic Zoom
+  ─────────────────────────────────
+  The viewport IS the laptop screen (zoomed in from previous scene).
+  A dashboard mosaic grid appears with 3 feature cards.
+  Each card zooms in to fill the screen, revealing the feature detail,
+  then transitions to the next card.
 
-  Phase 1 (0 → 0.30):  Registration flow — search bar + student card
-  Phase 2 (0.30 → 0.60): Verification — scan animation + verified badge
-  Phase 3 (0.60 → 1.0):  Gate log — entry logged + access granted
+  Phase 0 (0 → 0.08):    Mosaic grid appears (3 cards visible)
+  Phase 1 (0.08 → 0.35): Card 1 zooms in → Registration flow
+  Phase 2 (0.35 → 0.62): Card 2 zooms in → Verification scan
+  Phase 3 (0.62 → 0.92): Card 3 zooms in → Gate log + Access Granted
+  Phase 4 (0.92 → 1.0):  Final state holds
 */
 
 const STUDENT = {
@@ -28,47 +32,69 @@ export default function FeatureTourScene({
   /* ── Persistent dashboard chrome ── */
   const chromeOpacity = useTransform(progress, [0, 0.06], [0, 1]);
 
-  /* ═══════ Phase 1: Registration (0 → 0.30) ═══════ */
-  const phase1Opacity = useTransform(progress, [0, 0.04, 0.27, 0.33], [0, 1, 1, 0]);
+  /* ── Mosaic grid (visible when no card is zoomed) ── */
+  const mosaicOpacity = useTransform(
+    progress,
+    [0, 0.05, 0.06, 0.10, 0.32, 0.35, 0.36, 0.40, 0.59, 0.62, 0.63, 0.67],
+    [0, 1,    1,    0,    0,    1,    1,    0,    0,    1,    1,    0   ]
+  );
+  const mosaicScale = useTransform(progress, [0, 0.05], [0.9, 1]);
+
+  /* ── Card 1 highlight in mosaic ── */
+  const card1Highlight = useTransform(
+    progress, [0.05, 0.08], [0, 1]
+  );
+  const card2Highlight = useTransform(
+    progress, [0.32, 0.35], [0, 1]
+  );
+  const card3Highlight = useTransform(
+    progress, [0.59, 0.62], [0, 1]
+  );
+
+  /* ═══════ Phase 1: Registration (0.08 → 0.35) ═══════ */
+  const phase1Opacity = useTransform(progress, [0.08, 0.12, 0.30, 0.35], [0, 1, 1, 0]);
+  const phase1Scale = useTransform(progress, [0.08, 0.14], [0.3, 1]);
 
   // Heading
-  const reg_headOpacity = useTransform(progress, [0, 0.06], [0, 1]);
-  const reg_headY = useTransform(progress, [0, 0.06], [20, 0]);
+  const reg_headOpacity = useTransform(progress, [0.12, 0.16], [0, 1]);
+  const reg_headY = useTransform(progress, [0.12, 0.16], [20, 0]);
 
   // Search bar typing
-  const searchOpacity = useTransform(progress, [0.04, 0.1], [0, 1]);
-  const typedChars = useTransform(progress, [0.06, 0.18], [0, STUDENT.id.length]);
+  const searchOpacity = useTransform(progress, [0.14, 0.18], [0, 1]);
+  const typedChars = useTransform(progress, [0.16, 0.24], [0, STUDENT.id.length]);
 
   // Student card result
-  const cardOpacity = useTransform(progress, [0.16, 0.22], [0, 1]);
-  const cardY = useTransform(progress, [0.16, 0.22], [20, 0]);
+  const cardOpacity = useTransform(progress, [0.22, 0.26], [0, 1]);
+  const cardY = useTransform(progress, [0.22, 0.26], [20, 0]);
 
-  /* ═══════ Phase 2: Verification (0.30 → 0.60) ═══════ */
-  const phase2Opacity = useTransform(progress, [0.3, 0.35, 0.57, 0.63], [0, 1, 1, 0]);
+  /* ═══════ Phase 2: Verification (0.35 → 0.62) ═══════ */
+  const phase2Opacity = useTransform(progress, [0.35, 0.40, 0.57, 0.62], [0, 1, 1, 0]);
+  const phase2Scale = useTransform(progress, [0.35, 0.42], [0.3, 1]);
 
-  const verifyHeadOpacity = useTransform(progress, [0.3, 0.36], [0, 1]);
-  const scanProgress = useTransform(progress, [0.36, 0.48], [0, 1]);
-  const scanLineX = useTransform(progress, [0.36, 0.48], ["-100%", "100%"]);
-  const scanLineOpacity = useTransform(progress, [0.36, 0.38, 0.46, 0.48], [0, 1, 1, 0]);
+  const verifyHeadOpacity = useTransform(progress, [0.40, 0.44], [0, 1]);
+  const scanProgress = useTransform(progress, [0.44, 0.52], [0, 1]);
+  const scanLineX = useTransform(progress, [0.44, 0.52], ["-100%", "100%"]);
+  const scanLineOpacity = useTransform(progress, [0.44, 0.46, 0.50, 0.52], [0, 1, 1, 0]);
 
   // Verified badge
-  const verifiedScale = useTransform(progress, [0.48, 0.52, 0.55], [0, 1.2, 1]);
-  const verifiedOpacity = useTransform(progress, [0.48, 0.51], [0, 1]);
+  const verifiedScale = useTransform(progress, [0.52, 0.55, 0.57], [0, 1.2, 1]);
+  const verifiedOpacity = useTransform(progress, [0.52, 0.54], [0, 1]);
 
-  /* ═══════ Phase 3: Gate Log (0.60 → 1.0) ═══════ */
-  const phase3Opacity = useTransform(progress, [0.6, 0.66, 0.95, 1], [0, 1, 1, 1]);
+  /* ═══════ Phase 3: Gate Log (0.62 → 0.92) ═══════ */
+  const phase3Opacity = useTransform(progress, [0.62, 0.67, 0.90, 0.95], [0, 1, 1, 1]);
+  const phase3Scale = useTransform(progress, [0.62, 0.69], [0.3, 1]);
 
-  const gateHeadOpacity = useTransform(progress, [0.6, 0.66], [0, 1]);
-  const entryBannerOpacity = useTransform(progress, [0.66, 0.72], [0, 1]);
-  const entryBannerY = useTransform(progress, [0.66, 0.72], [-15, 0]);
-  const timestampOpacity = useTransform(progress, [0.72, 0.78], [0, 1]);
+  const gateHeadOpacity = useTransform(progress, [0.67, 0.71], [0, 1]);
+  const entryBannerOpacity = useTransform(progress, [0.71, 0.75], [0, 1]);
+  const entryBannerY = useTransform(progress, [0.71, 0.75], [-15, 0]);
+  const timestampOpacity = useTransform(progress, [0.75, 0.79], [0, 1]);
 
   // Access granted glow
   const accessGlowOpacity = useTransform(progress, (p) =>
-    p >= 0.78 ? 0.15 + Math.sin((p - 0.78) * 8 * Math.PI) * 0.1 : 0
+    p >= 0.79 ? 0.15 + Math.sin((p - 0.79) * 8 * Math.PI) * 0.1 : 0
   );
-  const accessTextOpacity = useTransform(progress, [0.8, 0.88], [0, 1]);
-  const accessTextScale = useTransform(progress, [0.8, 0.86, 0.9], [0.8, 1.05, 1]);
+  const accessTextOpacity = useTransform(progress, [0.81, 0.87], [0, 1]);
+  const accessTextScale = useTransform(progress, [0.81, 0.85, 0.88], [0.8, 1.05, 1]);
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]">
@@ -111,10 +137,89 @@ export default function FeatureTourScene({
       {/* ── Content area ── */}
       <div className="absolute inset-0 pt-14 md:pt-16 px-5 md:px-8 flex items-center justify-center">
 
-        {/* ═══════ PHASE 1: Registration ═══════ */}
+        {/* ═══════ MOSAIC GRID (visible between zoomed cards) ═══════ */}
+        <motion.div
+          className="absolute inset-0 pt-14 md:pt-16 px-5 md:px-8 flex items-center justify-center"
+          style={{ opacity: mosaicOpacity, scale: mosaicScale }}
+        >
+          <div className="w-full max-w-2xl grid grid-cols-3 gap-3 md:gap-4">
+            {/* Card 1: Register */}
+            <motion.div
+              className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 p-4 flex flex-col items-center justify-center text-center"
+              style={{
+                background: "linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(37,99,235,0.05) 100%)",
+                boxShadow: useTransform(card1Highlight, (h) =>
+                  h > 0 ? `0 0 ${20 * h}px rgba(37,99,235,${0.3 * h}), inset 0 0 ${15 * h}px rgba(37,99,235,${0.1 * h})` : "none"
+                ),
+                borderColor: useTransform(card1Highlight, (h) =>
+                  h > 0 ? `rgba(37,99,235,${0.3 + h * 0.4})` : "rgba(255,255,255,0.1)"
+                ),
+              }}
+            >
+              <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center mb-2">
+                <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
+                </svg>
+              </div>
+              <span className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-blue-400/50 font-medium">Step 1</span>
+              <span className="text-sm md:text-base font-bold text-white mt-0.5">Search & Register</span>
+              <span className="text-[9px] md:text-[11px] text-white/30 mt-1">Find & register students</span>
+            </motion.div>
+
+            {/* Card 2: Verify */}
+            <motion.div
+              className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 p-4 flex flex-col items-center justify-center text-center"
+              style={{
+                background: "linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(124,58,237,0.05) 100%)",
+                boxShadow: useTransform(card2Highlight, (h) =>
+                  h > 0 ? `0 0 ${20 * h}px rgba(124,58,237,${0.3 * h}), inset 0 0 ${15 * h}px rgba(124,58,237,${0.1 * h})` : "none"
+                ),
+                borderColor: useTransform(card2Highlight, (h) =>
+                  h > 0 ? `rgba(124,58,237,${0.3 + h * 0.4})` : "rgba(255,255,255,0.1)"
+                ),
+              }}
+            >
+              <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center mb-2">
+                <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              </div>
+              <span className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-purple-400/50 font-medium">Step 2</span>
+              <span className="text-sm md:text-base font-bold text-white mt-0.5">Verify Identity</span>
+              <span className="text-[9px] md:text-[11px] text-white/30 mt-1">Scan & confirm ownership</span>
+            </motion.div>
+
+            {/* Card 3: Access */}
+            <motion.div
+              className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 p-4 flex flex-col items-center justify-center text-center"
+              style={{
+                background: "linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.05) 100%)",
+                boxShadow: useTransform(card3Highlight, (h) =>
+                  h > 0 ? `0 0 ${20 * h}px rgba(16,185,129,${0.3 * h}), inset 0 0 ${15 * h}px rgba(16,185,129,${0.1 * h})` : "none"
+                ),
+                borderColor: useTransform(card3Highlight, (h) =>
+                  h > 0 ? `rgba(16,185,129,${0.3 + h * 0.4})` : "rgba(255,255,255,0.1)"
+                ),
+              }}
+            >
+              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mb-2">
+                <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path d="M9 12l2 2 4-4" />
+                  <path d="M5 7h14M5 12h14M5 17h14" strokeOpacity={0.3} />
+                </svg>
+              </div>
+              <span className="text-[10px] md:text-xs uppercase tracking-[0.15em] text-emerald-400/50 font-medium">Step 3</span>
+              <span className="text-sm md:text-base font-bold text-white mt-0.5">Gate Log & Access</span>
+              <span className="text-[9px] md:text-[11px] text-white/30 mt-1">Log entry & grant access</span>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* ═══════ PHASE 1: Registration (zoomed card) ═══════ */}
         <motion.div
           className="absolute inset-0 pt-14 md:pt-16 px-5 md:px-8 flex flex-col items-center justify-center"
-          style={{ opacity: phase1Opacity }}
+          style={{ opacity: phase1Opacity, scale: phase1Scale }}
         >
           <div className="w-full max-w-md">
             {/* Section heading */}
@@ -163,10 +268,10 @@ export default function FeatureTourScene({
           </div>
         </motion.div>
 
-        {/* ═══════ PHASE 2: Verification ═══════ */}
+        {/* ═══════ PHASE 2: Verification (zoomed card) ═══════ */}
         <motion.div
           className="absolute inset-0 pt-14 md:pt-16 px-5 md:px-8 flex flex-col items-center justify-center"
-          style={{ opacity: phase2Opacity }}
+          style={{ opacity: phase2Opacity, scale: phase2Scale }}
         >
           <div className="w-full max-w-md">
             <motion.div className="mb-5" style={{ opacity: verifyHeadOpacity }}>
@@ -231,10 +336,10 @@ export default function FeatureTourScene({
           </div>
         </motion.div>
 
-        {/* ═══════ PHASE 3: Gate Log ═══════ */}
+        {/* ═══════ PHASE 3: Gate Log (zoomed card) ═══════ */}
         <motion.div
           className="absolute inset-0 pt-14 md:pt-16 px-5 md:px-8 flex flex-col items-center justify-center"
-          style={{ opacity: phase3Opacity }}
+          style={{ opacity: phase3Opacity, scale: phase3Scale }}
         >
           {/* Access granted green glow */}
           <motion.div
