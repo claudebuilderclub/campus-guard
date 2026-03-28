@@ -3,27 +3,39 @@
 import { motion, useTransform, MotionValue } from "framer-motion";
 import RealisticLaptop from "./RealisticLaptop";
 
+/* ── Snap particles ── */
+const SNAP_PARTICLES = Array.from({ length: 12 }, (_, i) => ({
+  angle: (i / 12) * Math.PI * 2,
+  distance: 60 + Math.random() * 80,
+  size: 2 + Math.random() * 3,
+  delay: Math.random() * 0.3,
+}));
+
 export default function AssembleScene({
   progress,
 }: {
   progress: MotionValue<number>;
 }) {
   /* ── Screen bezel piece: slides from TOP (0 → 0.3) ── */
-  const bezelY = useTransform(progress, [0, 0.3], [-600, 0]);
-  const bezelRotate = useTransform(progress, [0, 0.3], [-8, 0]);
-  const bezelOpacity = useTransform(progress, [0, 0.1], [0, 1]);
+  const bezelY = useTransform(progress, [0, 0.3], [-500, 0]);
+  const bezelRotate = useTransform(progress, [0, 0.3], [-6, 0]);
+  const bezelOpacity = useTransform(progress, [0, 0.08], [0, 1]);
 
   /* ── Base piece: slides from BOTTOM (0.1 → 0.4) ── */
-  const baseY = useTransform(progress, [0.1, 0.4], [600, 0]);
-  const baseOpacity = useTransform(progress, [0.1, 0.2], [0, 1]);
+  const baseY = useTransform(progress, [0.1, 0.4], [500, 0]);
+  const baseOpacity = useTransform(progress, [0.1, 0.18], [0, 1]);
 
   /* ── Screen content: fades in during assembly (0.3 → 0.6) ── */
-  const screenOpacity = useTransform(progress, [0.3, 0.6], [0, 1]);
-  const screenScale = useTransform(progress, [0.3, 0.6], [0.8, 1]);
-  const screenGlow = useTransform(progress, [0.3, 0.6], [0, 0.8]);
+  const screenOpacity = useTransform(progress, [0.3, 0.55], [0, 1]);
+  const screenScale = useTransform(progress, [0.3, 0.55], [0.85, 1]);
+  const screenGlow = useTransform(progress, [0.3, 0.55], [0, 0.8]);
 
   /* ── Snap glow at join (pulse at ~0.5) ── */
-  const snapGlow = useTransform(progress, [0.45, 0.53, 0.6], [0, 1, 0.15]);
+  const snapGlow = useTransform(progress, [0.45, 0.52, 0.58], [0, 1, 0.1]);
+
+  /* ── Snap particle burst ── */
+  const particleBurst = useTransform(progress, [0.45, 0.6], [0, 1]);
+  const particleOpacity = useTransform(progress, [0.45, 0.5, 0.58, 0.62], [0, 1, 1, 0]);
 
   /* ── Crossfade: assembly pieces out, RealisticLaptop in (0.6 → 0.7) ── */
   const assemblyOpacity = useTransform(progress, [0.6, 0.7], [1, 0]);
@@ -35,25 +47,62 @@ export default function AssembleScene({
   const laptopScale = useTransform(progress, [0.7, 1.0], [0.95, 1]);
 
   /* ── "Assembled" text (0.8 → 1.0) ── */
-  const assembledOpacity = useTransform(progress, [0.8, 0.92], [0, 1]);
-  const assembledScale = useTransform(progress, [0.8, 0.92], [0.6, 1]);
+  const assembledOpacity = useTransform(progress, [0.8, 0.9], [0, 1]);
+  const assembledScale = useTransform(progress, [0.8, 0.88, 0.92], [0.5, 1.1, 1]);
+  const assembledY = useTransform(progress, [0.8, 0.9], [15, 0]);
 
   /* ── Background glow behind laptop ── */
-  const bgGlowOpacity = useTransform(progress, [0.7, 1.0], [0, 0.6]);
+  const bgGlowOpacity = useTransform(progress, [0.7, 1.0], [0, 0.5]);
   const bgGlowScale = useTransform(progress, [0.7, 1.0], [0.6, 1.2]);
+
+  /* ── Subtle label float (0.75 → 1.0) ── */
+  const labelOpacity = useTransform(progress, [0.75, 0.85], [0, 1]);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
       {/* ── Pulsing radial blue glow background ── */}
       <motion.div
-        className="pointer-events-none absolute w-[800px] h-[800px] rounded-full"
+        className="pointer-events-none absolute w-[700px] h-[700px] rounded-full"
         style={{
           opacity: bgGlowOpacity,
           scale: bgGlowScale,
           background:
-            "radial-gradient(circle, rgba(37,99,235,0.3) 0%, rgba(37,99,235,0.08) 40%, transparent 70%)",
+            "radial-gradient(circle, rgba(37,99,235,0.25) 0%, rgba(37,99,235,0.06) 40%, transparent 70%)",
         }}
       />
+
+      {/* ── Snap particle burst ── */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+        style={{ opacity: particleOpacity }}
+      >
+        {SNAP_PARTICLES.map((p, i) => {
+          const px = useTransform(
+            particleBurst,
+            [0, 1],
+            [0, Math.cos(p.angle) * p.distance]
+          );
+          const py = useTransform(
+            particleBurst,
+            [0, 1],
+            [0, Math.sin(p.angle) * p.distance]
+          );
+          return (
+            <motion.div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                x: px,
+                y: py,
+                width: p.size,
+                height: p.size,
+                backgroundColor: i % 2 === 0 ? "rgba(255,255,255,0.8)" : "rgba(37,99,235,0.6)",
+                boxShadow: "0 0 6px rgba(255,255,255,0.4)",
+              }}
+            />
+          );
+        })}
+      </motion.div>
 
       {/* ── Assembly pieces (progress 0–0.7, fades out at 0.6–0.7) ── */}
       <motion.div
@@ -61,7 +110,7 @@ export default function AssembleScene({
         style={{ opacity: assemblyOpacity }}
       >
         <div
-          className="relative w-[500px] md:w-[600px] mx-auto"
+          className="relative w-[480px] md:w-[580px] mx-auto"
           style={{ perspective: 1200 }}
         >
           <div style={{ transformStyle: "preserve-3d" }}>
@@ -91,7 +140,7 @@ export default function AssembleScene({
                       style={{
                         opacity: screenGlow,
                         background:
-                          "radial-gradient(ellipse at 50% 50%, rgba(37,99,235,0.5) 0%, rgba(37,99,235,0.1) 50%, transparent 80%)",
+                          "radial-gradient(ellipse at 50% 50%, rgba(37,99,235,0.45) 0%, rgba(37,99,235,0.1) 50%, transparent 80%)",
                       }}
                     />
 
@@ -135,7 +184,7 @@ export default function AssembleScene({
               style={{
                 opacity: snapGlow,
                 boxShadow:
-                  "0 0 20px 6px rgba(255,255,255,0.7), 0 0 40px 12px rgba(37,99,235,0.4)",
+                  "0 0 24px 8px rgba(255,255,255,0.6), 0 0 50px 16px rgba(37,99,235,0.35)",
                 background:
                   "linear-gradient(90deg, transparent 5%, white 50%, transparent 95%)",
               }}
@@ -267,13 +316,32 @@ export default function AssembleScene({
 
         {/* ── "Assembled" label ── */}
         <motion.div
-          className="absolute bottom-[15%] flex items-center justify-center gap-2"
-          style={{ opacity: assembledOpacity, scale: assembledScale }}
+          className="absolute bottom-[14%] flex items-center justify-center gap-3"
+          style={{ opacity: assembledOpacity, scale: assembledScale, y: assembledY }}
         >
-          <span className="text-green-400 text-xl">&#x2713;</span>
-          <span className="text-white/80 text-lg font-medium tracking-wide">
-            Assembled
-          </span>
+          <div className="flex items-center gap-2.5 bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-full px-5 py-2.5 shadow-lg">
+            <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+              <svg
+                viewBox="0 0 16 16"
+                className="w-3.5 h-3.5 text-green-400 fill-current"
+              >
+                <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z" />
+              </svg>
+            </div>
+            <span className="text-white/80 text-base font-medium tracking-wide">
+              Assembled
+            </span>
+          </div>
+        </motion.div>
+
+        {/* ── Floating glass labels ── */}
+        <motion.div
+          className="absolute top-[12%] right-[8%] md:right-[12%]"
+          style={{ opacity: labelOpacity }}
+        >
+          <div className="backdrop-blur-md bg-white/[0.06] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white/60 font-medium shadow-lg">
+            MacBook Pro
+          </div>
         </motion.div>
       </motion.div>
     </div>
