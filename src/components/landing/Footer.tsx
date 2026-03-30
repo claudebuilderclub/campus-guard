@@ -32,7 +32,7 @@ export default function Footer() {
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="#2563eb"
+                  stroke="#da7756"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"

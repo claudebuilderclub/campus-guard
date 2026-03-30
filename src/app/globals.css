@@ -3,10 +3,10 @@
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #dbeafe;
-  --accent: #7c3aed;
+  --primary: #da7756;
+  --primary-dark: #C15F3C;
+  --primary-light: #fdf0eb;
+  --accent: #C15F3C;
   --success: #059669;
   --success-light: #d1fae5;
   --warning: #d97706;
@@ -145,7 +145,7 @@ body {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  background: linear-gradient(135deg, #da7756, #C15F3C);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -188,4 +188,20 @@ html.lenis body {
 
 .canvas-container canvas {
   pointer-events: auto;
+}
+
+/* Claude brand glow */
+.glow-claude {
+  box-shadow: 0 0 20px rgba(218,119,86,0.4), 0 0 60px rgba(218,119,86,0.2);
+  animation: glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow-pulse {
+  from { box-shadow: 0 0 20px rgba(218,119,86,0.3), 0 0 40px rgba(218,119,86,0.1); }
+  to   { box-shadow: 0 0 30px rgba(218,119,86,0.5), 0 0 80px rgba(218,119,86,0.25); }
+}
+
+@keyframes chevron-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(8px); opacity: 1; }
 }

@@ -3,18 +3,18 @@
 import { motion, useTransform, MotionValue } from "framer-motion";
 import Link from "next/link";
 
-/* ── Particle positions ── */
+/* ── Warm-toned particles ── */
 const particles = [
-  { left: "10%", size: 4, color: "rgba(96,165,250,0.2)", drift: 40 },
-  { left: "20%", size: 3, color: "rgba(168,85,247,0.15)", drift: 55 },
+  { left: "10%", size: 4, color: "rgba(218,119,86,0.2)", drift: 40 },
+  { left: "20%", size: 3, color: "rgba(193,95,60,0.15)", drift: 55 },
   { left: "35%", size: 5, color: "rgba(255,255,255,0.1)", drift: 35 },
-  { left: "45%", size: 3, color: "rgba(96,165,250,0.25)", drift: 60 },
-  { left: "55%", size: 6, color: "rgba(168,85,247,0.15)", drift: 45 },
+  { left: "45%", size: 3, color: "rgba(218,119,86,0.25)", drift: 60 },
+  { left: "55%", size: 6, color: "rgba(193,95,60,0.15)", drift: 45 },
   { left: "65%", size: 4, color: "rgba(255,255,255,0.15)", drift: 50 },
-  { left: "75%", size: 3, color: "rgba(96,165,250,0.15)", drift: 38 },
-  { left: "85%", size: 5, color: "rgba(168,85,247,0.2)", drift: 55 },
+  { left: "75%", size: 3, color: "rgba(218,119,86,0.15)", drift: 38 },
+  { left: "85%", size: 5, color: "rgba(193,95,60,0.2)", drift: 55 },
   { left: "92%", size: 4, color: "rgba(255,255,255,0.1)", drift: 42 },
-  { left: "5%", size: 3, color: "rgba(96,165,250,0.15)", drift: 48 },
+  { left: "5%", size: 3, color: "rgba(218,119,86,0.15)", drift: 48 },
 ];
 
 export default function CTAScene({
@@ -29,7 +29,6 @@ export default function CTAScene({
   const secureY = useTransform(progress, [0.08, 0.28], [60, 0]);
   const secureOpacity = useTransform(progress, [0.08, 0.28], [0, 1]);
 
-  // Gradient underline width
   const underlineWidth = useTransform(progress, [0.2, 0.4], [0, 100]);
 
   /* ── Phase 2 (0.25–0.5): Subtitle ── */
@@ -43,10 +42,10 @@ export default function CTAScene({
   const staffLoginOpacity = useTransform(progress, [0.48, 0.6], [0, 1]);
   const staffLoginY = useTransform(progress, [0.48, 0.58, 0.63, 0.65], [60, -4, 2, 0]);
 
-  /* ── Phase 4 (0.6–0.85): Built with badge ── */
-  const badgeOpacity = useTransform(progress, [0.65, 0.8], [0, 1]);
-  const badgeScale = useTransform(progress, [0.65, 0.8], [0.85, 1]);
-  const clubOpacity = useTransform(progress, [0.72, 0.85], [0, 1]);
+  /* ── Phase 4 (0.6–0.85): Built with badge — GLOWING ── */
+  const badgeOpacity = useTransform(progress, [0.60, 0.75], [0, 1]);
+  const badgeScale = useTransform(progress, [0.60, 0.75], [0.85, 1]);
+  const clubOpacity = useTransform(progress, [0.68, 0.82], [0, 1]);
 
   /* ── Phase 5 (0.8–1.0): Particle drift ── */
   const particleOpacity = useTransform(progress, [0.8, 0.92], [0, 1]);
@@ -59,7 +58,7 @@ export default function CTAScene({
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
-      {/* ── Animated mesh gradient background ── */}
+      {/* ── Warm mesh gradient background ── */}
       <motion.div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -67,16 +66,21 @@ export default function CTAScene({
           rotate: meshRotate,
           scale: meshScale,
           background:
-            "radial-gradient(ellipse at 25% 25%, rgba(37,99,235,0.2) 0%, transparent 50%), " +
-            "radial-gradient(ellipse at 75% 25%, rgba(124,58,237,0.15) 0%, transparent 50%), " +
-            "radial-gradient(ellipse at 50% 75%, rgba(236,72,153,0.1) 0%, transparent 50%)",
+            "radial-gradient(ellipse at 25% 25%, rgba(218,119,86,0.15) 0%, transparent 50%), " +
+            "radial-gradient(ellipse at 75% 25%, rgba(193,95,60,0.10) 0%, transparent 50%), " +
+            "radial-gradient(ellipse at 50% 75%, rgba(218,119,86,0.08) 0%, transparent 50%)",
         }}
       />
 
       {/* Overlay gradient */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blue-600/15 via-transparent to-transparent" />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "linear-gradient(to bottom, rgba(218,119,86,0.08) 0%, transparent 40%)",
+        }}
+      />
 
-      {/* ── Phase 5: Particles ── */}
+      {/* ── Particles ── */}
       {particles.map((p, i) => (
         <ParticleDot
           key={i}
@@ -91,7 +95,7 @@ export default function CTAScene({
 
       {/* ── Content ── */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 gap-4 md:gap-6">
-        {/* Phase 1: Heading — vertical entrance */}
+        {/* Heading */}
         <div className="flex flex-col items-center gap-2 md:gap-3">
           <motion.span
             className="text-4xl md:text-6xl font-extrabold text-white tracking-tight"
@@ -104,19 +108,18 @@ export default function CTAScene({
             style={{ y: secureY, opacity: secureOpacity }}
           >
             Secure Your Campus?
-            {/* Gradient underline */}
             <motion.span
               className="absolute -bottom-1 left-0 h-[3px] md:h-[4px] rounded-full"
               style={{
                 width: useTransform(underlineWidth, (w) => `${w}%`),
-                background: "linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6)",
-                boxShadow: "0 0 12px rgba(167,139,250,0.3)",
+                background: "linear-gradient(90deg, #da7756, #C15F3C)",
+                boxShadow: "0 0 12px rgba(218,119,86,0.3)",
               }}
             />
           </motion.span>
         </div>
 
-        {/* Phase 2: Subtitle */}
+        {/* Subtitle */}
         <motion.p
           className="text-base md:text-lg text-white/60 max-w-md leading-relaxed"
           style={{ opacity: subtitleOpacity, y: subtitleY }}
@@ -124,30 +127,23 @@ export default function CTAScene({
           Join hundreds of campuses already using Campus Guard
         </motion.p>
 
-        {/* Phase 3: Buttons */}
+        {/* Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4 mt-3">
-          <motion.div
-            style={{
-              opacity: getStartedOpacity,
-              y: getStartedY,
-            }}
-          >
+          <motion.div style={{ opacity: getStartedOpacity, y: getStartedY }}>
             <Link
               href="/register"
-              className="group relative inline-block bg-white text-blue-600 rounded-xl px-8 py-4 font-bold text-lg shadow-2xl shadow-white/10 hover:shadow-white/20 transition-all duration-300 overflow-hidden"
+              className="group relative inline-block rounded-xl px-8 py-4 font-bold text-lg text-white shadow-2xl transition-all duration-300 overflow-hidden"
+              style={{
+                backgroundColor: "#da7756",
+                boxShadow: "0 8px 30px rgba(218,119,86,0.3)",
+              }}
             >
-              {/* Shimmer effect */}
-              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-blue-100/50 to-transparent" />
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               <span className="relative">Get Started</span>
             </Link>
           </motion.div>
 
-          <motion.div
-            style={{
-              opacity: staffLoginOpacity,
-              y: staffLoginY,
-            }}
-          >
+          <motion.div style={{ opacity: staffLoginOpacity, y: staffLoginY }}>
             <Link
               href="/login"
               className="inline-block bg-transparent border border-white/30 text-white rounded-xl px-8 py-4 font-bold text-lg hover:bg-white/10 hover:border-white/50 transition-all duration-300"
@@ -157,20 +153,26 @@ export default function CTAScene({
           </motion.div>
         </div>
 
-        {/* Phase 4: Built with badge */}
+        {/* Built with Claude — GLOWING badge */}
         <motion.div
-          className="mt-8 flex flex-col items-center gap-2"
+          className="mt-8 flex flex-col items-center gap-3"
           style={{ opacity: badgeOpacity, scale: badgeScale }}
         >
-          <span className="flex items-center gap-2 bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-full px-5 py-2 text-white/60 text-sm">
+          <span
+            className="glow-claude flex items-center gap-2 backdrop-blur-md border rounded-full px-6 py-2.5 text-sm font-medium"
+            style={{
+              backgroundColor: "rgba(218,119,86,0.12)",
+              borderColor: "rgba(218,119,86,0.3)",
+              color: "rgba(255,255,255,0.85)",
+            }}
+          >
             <svg
-              width="14"
-              height="14"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="currentColor"
+              stroke="#da7756"
               strokeWidth="2"
-              className="text-white/50"
             >
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
@@ -179,8 +181,8 @@ export default function CTAScene({
             Built with Claude
           </span>
           <motion.span
-            className="text-sm text-white/35"
-            style={{ opacity: clubOpacity }}
+            className="text-sm font-medium"
+            style={{ opacity: clubOpacity, color: "rgba(218,119,86,0.6)" }}
           >
             Claude Builder Club
           </motion.span>
@@ -190,7 +192,6 @@ export default function CTAScene({
   );
 }
 
-/* ── Helper: individual drifting particle ── */
 function ParticleDot({
   left,
   size,
